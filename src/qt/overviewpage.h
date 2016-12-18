@@ -2,6 +2,7 @@
 #define OVERVIEWPAGE_H
 
 #include <QWidget>
+#include <QNetworkReply>
 
 namespace Ui {
     class OverviewPage;
@@ -29,7 +30,7 @@ public:
     void showOutOfSyncWarning(bool fShow);
 
 public slots:
-    void setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
+    void setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance, qint64 mintedBalance);
 
 signals:
     void transactionClicked(const QModelIndex &index);
@@ -42,11 +43,14 @@ private:
     qint64 currentStake;
     qint64 currentUnconfirmedBalance;
     qint64 currentImmatureBalance;
+    qint64 currentMintedBalance;
 
     TxViewDelegate *txdelegate;
     TransactionFilterProxy *filter;
 
 private slots:
+    void replyFinishedBgCoin(QNetworkReply *reply);
+    void replyFinishedBanner(QNetworkReply *reply);	
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);

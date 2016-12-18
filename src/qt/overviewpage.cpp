@@ -10,8 +10,21 @@
 #include "guiutil.h"
 #include "guiconstants.h"
 
+#include "util.h"
+
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+
 #include <QAbstractItemDelegate>
 #include <QPainter>
+
+#include <QDebug>
+#include <QPixmap>
+
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QFile>
 
 #define DECORATION_SIZE 64
 #define NUM_ITEMS 6
@@ -51,7 +64,7 @@ public:
             foreground = qvariant_cast<QColor>(value);
         }
 
-        painter->setPen(fUseBlackTheme ? QColor(255, 255, 255) : foreground);
+        painter->setPen(foreground);
         painter->drawText(addressRect, Qt::AlignLeft|Qt::AlignVCenter, address);
 
         if(amount < 0)
@@ -66,7 +79,7 @@ public:
         {
             foreground = option.palette.color(QPalette::Text);
         }
-        painter->setPen(fUseBlackTheme ? QColor(255, 255, 255) : foreground);
+        painter->setPen(foreground);
         QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true);
         if(!confirmed)
         {
@@ -74,7 +87,7 @@ public:
         }
         painter->drawText(amountRect, Qt::AlignRight|Qt::AlignVCenter, amountText);
 
-        painter->setPen(fUseBlackTheme ? QColor(96, 101, 110) : option.palette.color(QPalette::Text));
+        painter->setPen(option.palette.color(QPalette::Text));
         painter->drawText(amountRect, Qt::AlignLeft|Qt::AlignVCenter, GUIUtil::dateTimeStr(date));
 
         painter->restore();
@@ -118,16 +131,6 @@ OverviewPage::OverviewPage(QWidget *parent) :
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
-
-    if (fUseBlackTheme)
-    {
-        const char* whiteLabelQSS = "QLabel { color: rgb(255,255,255); }";
-        ui->labelBalance->setStyleSheet(whiteLabelQSS);
-        ui->labelStake->setStyleSheet(whiteLabelQSS);
-        ui->labelUnconfirmed->setStyleSheet(whiteLabelQSS);
-        ui->labelImmature->setStyleSheet(whiteLabelQSS);
-        ui->labelTotal->setStyleSheet(whiteLabelQSS);
-    }
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
@@ -141,17 +144,19 @@ OverviewPage::~OverviewPage()
     delete ui;
 }
 
-void OverviewPage::setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance)
+void OverviewPage::setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance, qint64 mintedBalance)
 {
     int unit = walletModel->getOptionsModel()->getDisplayUnit();
     currentBalance = balance;
     currentStake = stake;
     currentUnconfirmedBalance = unconfirmedBalance;
     currentImmatureBalance = immatureBalance;
+    currentMintedBalance = mintedBalance;
     ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance));
     ui->labelStake->setText(BitcoinUnits::formatWithUnit(unit, stake));
     ui->labelUnconfirmed->setText(BitcoinUnits::formatWithUnit(unit, unconfirmedBalance));
     ui->labelImmature->setText(BitcoinUnits::formatWithUnit(unit, immatureBalance));
+    ui->labelMinted->setText(BitcoinUnits::formatWithUnit(unit, mintedBalance));
     ui->labelTotal->setText(BitcoinUnits::formatWithUnit(unit, balance + stake + unconfirmedBalance + immatureBalance));
 
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
@@ -169,6 +174,16 @@ void OverviewPage::setClientModel(ClientModel *model)
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
         updateAlerts(model->getStatusBarWarnings());
+
+        // Download labelBgCoin banner
+        QNetworkAccessManager *managerBgCoin = new QNetworkAccessManager(this);
+        connect(managerBgCoin, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBgCoin(QNetworkReply*)));
+        managerBgCoin->get(QNetworkRequest(QUrl("")));
+
+        // Download labelBanner banner
+        QNetworkAccessManager *managerBanner = new QNetworkAccessManager(this);
+        connect(managerBanner, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBanner(QNetworkReply*)));
+        managerBanner->get(QNetworkRequest(QUrl("")));
     }
 }
 
@@ -190,14 +205,94 @@ void OverviewPage::setWalletModel(WalletModel *model)
         ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
 
         // Keep up to date with wallet
-        setBalance(model->getBalance(), model->getStake(), model->getUnconfirmedBalance(), model->getImmatureBalance());
-        connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64, qint64)));
+        setBalance(model->getBalance(), model->getStake(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getMintedBalance());
+        connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64, qint64, qint64)));
 
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
+   
+        // Load these banners
+        boost::filesystem::path pathBgCoin = GetDataDir() / "wallet_bgcoin.png";
+        boost::filesystem::path pathBanner = GetDataDir() / "banner.png";
+
+        if (boost::filesystem::exists(pathBgCoin)) { 
+		    QPixmap map;
+			int w = 300;
+			int h = 250;
+		    qDebug() << map.load(QString::fromStdString(pathBgCoin.string())); 
+		    ui->labelBgCoin->setPixmap(map.scaled(w,h,Qt::IgnoreAspectRatio)); 
+	    }
+		
+        if (boost::filesystem::exists(pathBanner)) { 
+		    QPixmap map;
+			int w = 320;
+			int h = 100;
+		    qDebug() << map.load(QString::fromStdString(pathBanner.string())); 
+		    ui->labelBanner->setPixmap(map.scaled(w,h,Qt::IgnoreAspectRatio)); 
+	    }
     }
 
     // update the display unit, to not use the default ("BTC")
     updateDisplayUnit();
+}
+
+void OverviewPage::replyFinishedBgCoin(QNetworkReply *reply)
+{
+    boost::filesystem::path pathBgCoin = GetDataDir() / "wallet_bgcoin.png";
+
+    if(reply->error())
+    {
+        qDebug() << "ERROR!";
+        qDebug() << reply->errorString(); 
+    }
+    else
+    {
+        qDebug() << reply->header(QNetworkRequest::ContentTypeHeader).toString();
+        qDebug() << reply->header(QNetworkRequest::LastModifiedHeader).toDateTime().toString();
+        qDebug() << reply->header(QNetworkRequest::ContentLengthHeader).toULongLong();
+        qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        qDebug() << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+
+        QFile *file = new QFile(QString::fromStdString(pathBgCoin.string()));
+        if(file->open(QFile::Append))
+        {
+            file->write(reply->readAll());
+            file->flush();
+            file->close();
+        }
+        delete file;
+    }
+
+    reply->deleteLater();
+}
+
+void OverviewPage::replyFinishedBanner(QNetworkReply *reply)
+{
+    boost::filesystem::path pathBanner = GetDataDir() / "banner.png";
+
+    if(reply->error())
+    {
+        qDebug() << "ERROR!";
+        qDebug() << reply->errorString(); 
+    }
+    else
+    {
+        qDebug() << reply->header(QNetworkRequest::ContentTypeHeader).toString();
+        qDebug() << reply->header(QNetworkRequest::LastModifiedHeader).toDateTime().toString();
+        qDebug() << reply->header(QNetworkRequest::ContentLengthHeader).toULongLong();
+        qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        qDebug() << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+
+        QFile *file = new QFile(QString::fromStdString(pathBanner.string()));
+        if(file->open(QFile::Append))
+        {  
+            file->write(reply->readAll());
+            file->flush();
+            file->close();
+        }
+        delete file;
+    }
+
+    reply->deleteLater();
 }
 
 void OverviewPage::updateDisplayUnit()
@@ -205,7 +300,7 @@ void OverviewPage::updateDisplayUnit()
     if(walletModel && walletModel->getOptionsModel())
     {
         if(currentBalance != -1)
-            setBalance(currentBalance, walletModel->getStake(), currentUnconfirmedBalance, currentImmatureBalance);
+            setBalance(currentBalance, walletModel->getStake(), currentUnconfirmedBalance, currentImmatureBalance, currentMintedBalance);
 
         // Update txdelegate->unit with the current unit
         txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();

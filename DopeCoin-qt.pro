@@ -1,6 +1,6 @@
 TEMPLATE = app
-TARGET = blackcoin-qt
-VERSION = 1.2.2
+TARGET = dopecoin-qt
+VERSION = 4.0.0.0
 INCLUDEPATH += src src/json src/qt
 QT += network
 DEFINES += ENABLE_WALLET
@@ -11,6 +11,36 @@ CONFIG += thread
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0
+}
+
+# UNCOMMENT THIS SECTION TO BUILD ON WINDOWS
+# Change paths if needed, these use the foocoin/deps.git repository locations
+
+win32 {
+    OPENSSL_LIB_PATH = C:\deps\openssl-1.0.2g
+    OPENSSL_INCLUDE_PATH = C:\deps\openssl-1.0.2g\include
+    MINIUPNPC_INCLUDE_PATH = C:\deps
+    MINIUPNPC_LIB_PATH = C:\deps\miniupnpc
+    QRENCODE_INCLUDE_PATH = C:\deps\qrencode-3.4.4
+    QRENCODE_LIB_PATH = C:\deps\qrencode-3.4.4\.libs
+    BDB_INCLUDE_PATH = C:\deps\db-4.8.30.NC\build_unix
+    BDB_LIB_PATH = C:\deps\db-4.8.30.NC\build_unix
+    BOOST_LIB_SUFFIX=-mgw53-mt-s-1_57
+    BOOST_INCLUDE_PATH = C:\deps\boost_1_57_0
+    BOOST_LIB_PATH = C:\deps\boost_1_57_0\stage\lib
+}
+
+macx {
+    OPENSSL_LIB_PATH = /usr/local/opt/openssl/lib
+    OPENSSL_INCLUDE_PATH = /usr/local/opt/openssl/include
+    MINIUPNPC_INCLUDE_PATH = /usr/local/opt/miniupnpc/include
+    MINIUPNPC_LIB_PATH = /usr/local/opt/miniupnpc/lib
+    QRENCODE_INCLUDE_PATH = /usr/local/opt/qrencode/include
+    QRENCODE_LIB_PATH = /usr/local/opt/qrencode/lib
+    BDB_INCLUDE_PATH = /usr/local/BerkeleyDB.4.8/include/
+    BDB_LIB_PATH = /usr/local/BerkeleyDB.4.8/lib
+    BOOST_INCLUDE_PATH = /usr/local/include
+    BOOST_LIB_PATH = /usr/local/lib
 }
 
 # for boost 1.37, add -mt to the boost libraries
@@ -94,14 +124,14 @@ LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
 SOURCES += src/txdb-leveldb.cpp
 !win32 {
     # we use QMAKE_CXXFLAGS_RELEASE even without RELEASE=1 because we use RELEASE to indicate linking preferences not -O preferences
-    genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
+    # genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
 } else {
     # make an educated guess about what the ranlib command is called
     isEmpty(QMAKE_RANLIB) {
         QMAKE_RANLIB = $$replace(QMAKE_STRIP, strip, ranlib)
     }
     LIBS += -lshlwapi
-    genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
+    # genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
 }
 genleveldb.target = $$PWD/src/leveldb/libleveldb.a
 genleveldb.depends = FORCE
@@ -358,8 +388,9 @@ isEmpty(BOOST_LIB_SUFFIX) {
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
-    win32:BOOST_THREAD_LIB_SUFFIX = _win32$$BOOST_LIB_SUFFIX
-    else:BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
+    # win32:BOOST_THREAD_LIB_SUFFIX = _win32$$BOOST_LIB_SUFFIX
+    # else:BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
+	BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
 }
 
 isEmpty(BDB_LIB_PATH) {
@@ -401,7 +432,7 @@ macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
 macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
 macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/bitcoin.icns
-macx:TARGET = "BlackCoin-Qt"
+macx:TARGET = "DopeCoin-Qt"
 macx:QMAKE_CFLAGS_THREAD += -pthread
 macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread

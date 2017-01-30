@@ -18,14 +18,6 @@
 #include <QAbstractItemDelegate>
 #include <QPainter>
 
-#include <QDebug>
-#include <QPixmap>
-
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QFile>
-
 #define DECORATION_SIZE 64
 #define NUM_ITEMS 6
 
@@ -174,16 +166,6 @@ void OverviewPage::setClientModel(ClientModel *model)
         // Show warning if this is a prerelease version
         connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
         updateAlerts(model->getStatusBarWarnings());
-
-        // Download labelBgCoin banner
-        QNetworkAccessManager *managerBgCoin = new QNetworkAccessManager(this);
-        connect(managerBgCoin, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBgCoin(QNetworkReply*)));
-        managerBgCoin->get(QNetworkRequest(QUrl("")));
-
-        // Download labelBanner banner
-        QNetworkAccessManager *managerBanner = new QNetworkAccessManager(this);
-        connect(managerBanner, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinishedBanner(QNetworkReply*)));
-        managerBanner->get(QNetworkRequest(QUrl("")));
     }
 }
 
@@ -209,90 +191,10 @@ void OverviewPage::setWalletModel(WalletModel *model)
         connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64, qint64, qint64)));
 
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
-   
-        // Load these banners
-        boost::filesystem::path pathBgCoin = GetDataDir() / "wallet_bgcoin.png";
-        boost::filesystem::path pathBanner = GetDataDir() / "banner.png";
-
-        if (boost::filesystem::exists(pathBgCoin)) { 
-		    QPixmap map;
-			int w = 300;
-			int h = 250;
-		    qDebug() << map.load(QString::fromStdString(pathBgCoin.string())); 
-		    ui->labelBgCoin->setPixmap(map.scaled(w,h,Qt::IgnoreAspectRatio)); 
-	    }
-		
-        if (boost::filesystem::exists(pathBanner)) { 
-		    QPixmap map;
-			int w = 320;
-			int h = 100;
-		    qDebug() << map.load(QString::fromStdString(pathBanner.string())); 
-		    ui->labelBanner->setPixmap(map.scaled(w,h,Qt::IgnoreAspectRatio)); 
-	    }
     }
 
     // update the display unit, to not use the default ("BTC")
     updateDisplayUnit();
-}
-
-void OverviewPage::replyFinishedBgCoin(QNetworkReply *reply)
-{
-    boost::filesystem::path pathBgCoin = GetDataDir() / "wallet_bgcoin.png";
-
-    if(reply->error())
-    {
-        qDebug() << "ERROR!";
-        qDebug() << reply->errorString(); 
-    }
-    else
-    {
-        qDebug() << reply->header(QNetworkRequest::ContentTypeHeader).toString();
-        qDebug() << reply->header(QNetworkRequest::LastModifiedHeader).toDateTime().toString();
-        qDebug() << reply->header(QNetworkRequest::ContentLengthHeader).toULongLong();
-        qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        qDebug() << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-
-        QFile *file = new QFile(QString::fromStdString(pathBgCoin.string()));
-        if(file->open(QFile::Append))
-        {
-            file->write(reply->readAll());
-            file->flush();
-            file->close();
-        }
-        delete file;
-    }
-
-    reply->deleteLater();
-}
-
-void OverviewPage::replyFinishedBanner(QNetworkReply *reply)
-{
-    boost::filesystem::path pathBanner = GetDataDir() / "banner.png";
-
-    if(reply->error())
-    {
-        qDebug() << "ERROR!";
-        qDebug() << reply->errorString(); 
-    }
-    else
-    {
-        qDebug() << reply->header(QNetworkRequest::ContentTypeHeader).toString();
-        qDebug() << reply->header(QNetworkRequest::LastModifiedHeader).toDateTime().toString();
-        qDebug() << reply->header(QNetworkRequest::ContentLengthHeader).toULongLong();
-        qDebug() << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        qDebug() << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-
-        QFile *file = new QFile(QString::fromStdString(pathBanner.string()));
-        if(file->open(QFile::Append))
-        {  
-            file->write(reply->readAll());
-            file->flush();
-            file->close();
-        }
-        delete file;
-    }
-
-    reply->deleteLater();
 }
 
 void OverviewPage::updateDisplayUnit()

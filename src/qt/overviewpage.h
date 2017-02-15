@@ -49,8 +49,6 @@ private:
     TransactionFilterProxy *filter;
 
 private slots:
-    void replyFinishedBgCoin(QNetworkReply *reply);
-    void replyFinishedBanner(QNetworkReply *reply);	
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex &index);
     void updateAlerts(const QString &warnings);

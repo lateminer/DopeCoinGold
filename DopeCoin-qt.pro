@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = dopecoin-qt
-VERSION = 4.0.0.1
+VERSION = 4.0.0.2
 INCLUDEPATH += src src/json src/qt
 QT += network
 DEFINES += ENABLE_WALLET

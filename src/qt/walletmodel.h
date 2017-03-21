@@ -68,6 +68,7 @@ public:
     qint64 getUnconfirmedBalance() const;
     qint64 getImmatureBalance() const;
     qint64 getMintedBalance() const;
+    int getNumTransactions() const;
     EncryptionStatus getEncryptionStatus() const;
 
     // Check address for validity
@@ -142,6 +143,7 @@ private:
     qint64 cachedStake;
     qint64 cachedUnconfirmedBalance;
     qint64 cachedImmatureBalance;
+    qint64 cachedNumTransactions;
     qint64 cachedMintedBalance;
     EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
@@ -166,6 +168,9 @@ public slots:
 signals:
     // Signal that balance in wallet changed
     void balanceChanged(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance, qint64 mintedBalance);
+
+    // Number of transactions in wallet changed
+    void numTransactionsChanged(int count);
 
     // Encryption status of wallet changed
     void encryptionStatusChanged(int status);

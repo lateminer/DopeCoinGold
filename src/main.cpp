@@ -2133,7 +2133,9 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
         // Extra checks to prevent "fill up memory by spamming with bogus blocks"
         const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
         int64_t deltaTime = pblock->GetBlockTime() - pcheckpoint->nTime;
-        if (deltaTime < 0)
+		//Hot Fix for DopeCoinGold Reduce hard zero Limit. Set from 0 to 20 min LimxDev 05-2017
+		int timeframe = 20 * 60;
+        if (deltaTime < timeframe)
         {
             if (pfrom)
                 pfrom->Misbehaving(1);

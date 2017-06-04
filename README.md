@@ -9,6 +9,8 @@ Resources:
 
 - Website: http://dopecoin.com
 - Bitcointalk: https://bitcointalk.org/index.php?topic=467641.0
+- Block explorer (Chainz): https://chainz.cryptoid.info/dope/
+- Block explorer (Block Experts): https://www.blockexperts.com/dope
 
 
 Specifications:
@@ -25,6 +27,13 @@ Specifications:
 
 Builds:
 ----------------
+
+v.4.0.0.3:
+
+- Fixed an error "block with timestamp before last checkpoint"
+- Code updated to Blackcoin v1.2.4
+- Updated seed nodes
+- Added checkpoint at block 110000
 
 v.4.0.0.2:
 

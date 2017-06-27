@@ -80,6 +80,12 @@ public:
         vSeeds.push_back(CDNSSeedData("37.2.133.145", "37.2.133.145"));
         vSeeds.push_back(CDNSSeedData("85.214.68.75", "85.214.68.75"));
         vSeeds.push_back(CDNSSeedData("188.68.52.172", "188.68.52.172"));
+
+        // Nodes from Blockexperts
+        vSeeds.push_back(CDNSSeedData("213.32.98.226", "213.32.98.226"));
+        vSeeds.push_back(CDNSSeedData("89.106.38.148", "89.106.38.148"));
+        vSeeds.push_back(CDNSSeedData("85.229.150.93", "85.229.150.93")); 
+        vSeeds.push_back(CDNSSeedData("144.76.237.39", "144.76.237.39"));         
         
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 30); // first letter "D"
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 5); 

@@ -28,6 +28,11 @@ Specifications:
 Builds:
 ----------------
 
+v.4.0.0.4:
+
+- Accept blocks from Dopecoin Core client after 02/01/2018 @ 12:00am (UTC)
+- Added checkpoint at block 300500
+
 v.4.0.0.3:
 
 - Fixed an error "block with timestamp before last checkpoint"

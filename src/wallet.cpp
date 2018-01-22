@@ -1713,6 +1713,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     // Calculate reward
     {
+        const CBlockIndex* pIndex0 = GetLastBlockIndex(pindexBest, true);
         int64_t nReward = GetProofOfStakeReward(pindexPrev, 0, nFees, pIndex0->nHeight+1);
         if (nReward <= 0)
             return false;

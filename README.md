@@ -27,6 +27,13 @@ Specifications:
 Builds:
 ----------------
 
+v.4.0.0.5:
+
+- Code updated to Blackcoin 1.2.5
+- Updated seed nodes
+- Added DNS seed
+- Added checkpoint at block 345000
+
 v.4.0.0.4:
 
 - Accept blocks from Dopecoin Core client after 02/01/2018 @ 12:00am (UTC)

@@ -33,6 +33,7 @@ v.4.0.0.5:
 - Updated seed nodes
 - Added DNS seed
 - Added checkpoint at block 345000
+- Multiple small fixes
 
 v.4.0.0.4:
 

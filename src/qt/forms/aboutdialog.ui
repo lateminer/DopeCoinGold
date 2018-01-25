@@ -109,13 +109,13 @@ Copyright © 2014-2018 The DopeCoin developers
        </property>
        <property name="text">
         <string>
-Please contribute if you find DopeCoin useful. Visit &lt;a href=&quot;https://dopecoin.com&quot;&gt;https://dopecoin.com&lt;/a&gt; for further information about the software.
+Please contribute if you find DopeCoin useful.&lt;br&gt;
+Visit &lt;a href=&quot;https://dopecoin.com&quot;&gt;https://dopecoin.com&lt;/a&gt; for further information about the software.&lt;br&gt;&lt;br&gt;
 
-The source code is available from &lt;a href=&quot;https://github.com/dopecoin-dev/DopeCoinGold&quot;&gt;https://github.com/dopecoin-dev/DopeCoinGold&lt;/a&gt;.
+The source code is available from &lt;a href=&quot;https://github.com/dopecoin-dev/DopeCoinGold&quot;&gt;https://github.com/dopecoin-dev/DopeCoinGold&lt;/a&gt;.&lt;br&gt;&lt;br&gt;
 
-This is experimental software.
-
-Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
+This is experimental software.&lt;br&gt;
+Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.&lt;br&gt;&lt;br&gt;
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</string>
        </property>

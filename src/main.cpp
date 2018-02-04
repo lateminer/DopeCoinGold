@@ -340,7 +340,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
         }
         if (whichType == TX_NULL_DATA)
             nDataOut++;
-        if (txout.nValue == 0) {
+        else if (txout.nValue == 0) {
             reason = "dust";
             return false;
         }
@@ -1976,11 +1976,6 @@ bool CBlock::AcceptBlock()
 {
     AssertLockHeld(cs_main);
 
-    if (!AcceptCoreBlocks(nTime)) {
-        if (nVersion > CURRENT_VERSION)
-            return DoS(100, error("AcceptBlock() : reject unknown block version %d", nVersion));
-    }
-    
     // Check for duplicate
     uint256 hash = GetHash();
     if (mapBlockIndex.count(hash))

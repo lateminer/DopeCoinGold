@@ -59,7 +59,6 @@ static const int64_t nTargetTimespan = 90 * 20; // 30 min
 static const int64_t COIN_YEAR_REWARD = 5 * CENT;
 
 inline bool IsOnlyPOS(int nHeight) { return TestNet() ? nHeight > 100 : nHeight > 750; }
-inline bool AcceptCoreBlocks(int64_t nTime) { return TestNet() || nTime > 1517443200; } // 02/01/2018 @ 12:00am (UTC)
 inline int64_t GetStakeMinAge() { return TestNet() ? 1 * 60 * 60 : 12 * 60 * 60; } // 12 hours
 
 inline int64_t FutureDriftV1(int64_t nTime) { return nTime + 20 * 60; }

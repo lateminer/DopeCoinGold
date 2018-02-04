@@ -4,8 +4,8 @@ DopeCoin-qt: Qt5 GUI for DopeCoin
 Build instructions
 ===================
 
-Debian
--------
+Debian Jessie
+--------------
 
 First, make sure that the required packages for Qt5 development of your
 distribution are installed, for Debian and Ubuntu these are:
@@ -27,6 +27,12 @@ then execute the following:
 Alternatively, install Qt Creator and open the `dopecoin-qt.pro` file.
 
 An executable named `dopecoin-qt` will be built.
+
+
+Debian Stretch
+--------------
+
+Install libssl1.0-dev instead of libssl-dev
 
 
 Windows

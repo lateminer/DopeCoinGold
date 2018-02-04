@@ -28,7 +28,7 @@ but you can get the current version from http://developer.apple.com
 
 1.  Clone the github tree to get the source code:
 
-git clone https://github.com/rat4/dopecoin.git dopecoin
+git clone https://github.com/dopecoin-dev/DopeCoinGold.git dopecoin
 
 2.  Download and install MacPorts from http://www.macports.org/
 

@@ -27,6 +27,12 @@ Specifications:
 Builds:
 ----------------
 
+v.4.0.0.6:
+
+- Disconnect nodes older than protocol version 40001
+- Updated seed nodes
+- Added checkpoint at block 427520
+
 v.4.0.0.5:
 
 - Code updated to Blackcoin 1.2.5
